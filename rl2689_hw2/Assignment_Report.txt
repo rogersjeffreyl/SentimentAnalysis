@@ -1,0 +1,165 @@
+KAGGLE ID: ROGERS JEFFREY L
+Objective:
+The objective of this  Assignment is to  implement a classifier to  classify movie reviews into  positive and negative reviews
+
+Classifiers  Considered:
+
+Based on the  data provided the following classifiers were considered for implementation.
+
+a) Naive Bayes
+b) K-Nearest Neighbours
+c) Support Vector Machines
+
+Support vector machines require external libraries for implementation , and hence were not used for this assignment.
+
+Feature Selection:
+    
+	Feature selection is critical to the success of a clasifier. The main aim of feature selection is to reduce the dimensionality 
+	of the feautures such that the noisy features are eliminated. The bag of words model was  used in feature selection. Mutual   
+	information was used as a means of feature selection.
+    
+	Following are the other features that were tried out:
+	
+	a) Negation Handling  
+	  
+	   One of the most common  occurences  of of negative sentiment is the use of words like 'not'. This  occurence of not is a 
+	   strong indicator  of  negative sentiment. There are two possible occurence "not" . Not   can affect the word which is 
+	   immediately next to it as in 'not good' or  occurence like "not that the acting was bad but the music was", where not  is 
+	   intended for the word 'music'. I handled such occurences of not as follows:
+	   
+	        i) If  not is found in the sentence set a flag  to 1
+		   ii) append not_ to all other words that follow it
+		  iii) Reset the flag to 1 until the sentence ends or the sentence breaks with a '.'
+	       iV) For the words that were appended to not add it in the complimentary class with the same probability as it appears in                 the review for the currrent class 
+			   
+			eg: not a worthwile experience ===> not_worthwile not_experience
+			       
+			    
+	b) Detection of positive/negative sentiment words using Harvard General Inquirer Dictionary
+	  
+	    The harvard general inquirer dictionary is a colelction of 11160 words that  are tagged with various sentiment, 
+		relationship and power authority semantics. The tags that are of interest to us are Positiv and Negativ.
+		Words marked with such tags were stored separately. These words were used as features with the with the words in each class 
+		being equiprobable . This did not show marked improvement in accuracy.
+		 
+		
+	c) Parts of Speech Tagging
+	  
+	   Generally the words of the  sentence that convey sentiment are  adverbs and adjectives. Generally words that are nouns 
+	   pronouns etc donot contribute much to the  sentiment expressed in a given sentence.  The NLTK Pos Tagger was used to    
+	   generate  tags for the  words in the training corpus . As per the Penn tree bank POS tags list    
+	   (http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html) tags  JJ, JJR and JJS are adjectives and RB, RBR  
+	   and RBS are the adverbs.  Experiments were made considering  only the Words tagged as above, as features. POS tagging    
+	   resulted in lesser accuracies because the classification depends on the accuracy of the POs tagger and some of the  high  
+	   frequency negative  words were classified as  NN,NNS and other tags 
+
+Input Pre processing:
+   
+    The initial phase of preprocessing involved stemming and removal of stop words to reduce the  dimension of the feature space in       the bag of words model. As further experiments were conducted,I discovered that the stop word removal was removing the words    
+    like not and but that indicated negative sentiments, thus often leading to incorrect classsification.  The word pre   
+    processing  was enhanced to ignore such words that indicated negative sentiment.
+
+  Enhanced Input Preprocessing After  Experimentation:
+
+  Initally after the bag of words approach was followed, where the words were   subject to basic level of pre processing(punctuation   removal, stop words removal and stemming) the accuracy produced by the Naive Bayes Classifier  was  0.7249. The following    
+  enhancements were added to pre processing after  the set of trials
+
+  a) Replacing multiple occurence of Letters in Normal Words:
+  
+     People sometimes tend to use words that are not a part of the normal vocabulary  to express their emoions. 
+	 For example  a person who like a movie can comment as "I like the movie sooooo much". Here the word so has been expanded to  
+	 sooo.
+	 
+	 Regular expressions and nltk.wordnet were employed to  identify such words and   convert them to the normal spelling.
+	 
+ b) Replacing words like can't don't won't  etc with will not cannot and do not 
+ 
+    Generally people use a  abbreviated words like can't shan't should'nt ain't etc to indicate  negative expressions. These are   
+	 just  another forms of words  like can not , should not etc.   Preprocessing such terms and associating them with their  normal 
+	 form  enables to add more weightage to the occurence of the normal forms of the words instead of treating such words as new 
+	 occurences.
+
+	Experimentation:
+	
+	A naive bayes clasifier was implemented  considering the prior probabilities of the classes and the words which were used as   
+    features, initally cross validation was done taking 3/4th of the train data as training samples and 1/4 as testing samples.
+	Following  are the results  for various  number of features:
+	
+	                                      No of Feature           Accuracy
+	                                           100                   0.68
+											   2000                  0.74
+											   5000                  0.73
+											   8000                  0.75
+											  10000                  0.76
+	
+	The similar set of validations were performed for K Nearest Neighbour Classifier  for k=1,2,3
+	 	 
+
+                                      No of Feature   Number of Neigbours        Accuracy
+                                           100                 1  					0.60
+										   2000                1 					0.62
+										   5000                2  					0.63
+										   8000                2 					0.70
+										  10000                3  					0.61	
+                                      	
+   Comparing the performances of both the classifiers  I choose to implement  the naive bayes    
+   classifier that produced   greater accuracy during cross validation.
+   
+   Experimentation on the Naive Bayes Classifier:
+  
+   Based on the mutual information scores the top k  informative features were selected  and various experiments were performed on 
+   the test data   with the number of words  as [100,1000,5000,8000,10000]. The best accuracy was achieved when  10000 words were    
+   selected from the bag of words feature
+   
+                                     No of Words           Accuracy         Kaggle Submission Timestamp
+                                       100                   0.58429      	   Sun, 03 Nov 2013 07:42:41	
+									   1000                  0.62917           Sun, 03 Nov 2013 07:49:09
+									   5000                  0.70505	       Sun, 03 Nov 2013 08:20:58
+									   8000                  0.71386           Tue, 05 Nov 2013 02:20:03
+									  10000                  0.74852           Sun, 03 Nov 2013 03:50:49
+
+  Thus feature selection of 10000 words produced the best results
+  
+  Experimentation with Various Additional Features(No of Words is 10000):
+  
+  					       Type of Modification    			  Accuracy    		 Kaggle Submission Timestamp
+						   
+						     Negation Handling                 0.75248               Mon, 04 Nov 2013 08:25:05
+							 
+							 Inquirer Dictionary			   0.73934               Wed, 06 Nov 2013 16:07:36	
+							 
+							 Pos Tagging				       0.52102				 Mon, 04 Nov 2013 07:35:22		  		
+			
+							 Replacing don't with              0.76197               Fri, 08 Nov 2013 07:22:33 
+							 do not etc
+							 
+							 Removing multiple 
+							 occurences of letters             0.76197              Fri, 08 Nov 2013 07:22:33
+							 in words
+							 eg(looove to love) 
+						   
+						       			  
+   
+   
+   Thus  a best accuracy of  0.76197 was achieved  with 10000 words and  certain new features like Negation Handling, And other preprocessing being done on text
+   
+ Metrics:
+ 
+ Positive:
+ precision : 0.7580
+ Recall    : 0.7374
+ Fscore    : 0.7475
+ 
+ Negative:
+ Precision :0.7317
+ Recall    :0.7526
+ Fscore    :0.7420
+ 
+ 
+ 
+ 
+   
+   										
+										
+										
+										

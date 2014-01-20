@@ -1,0 +1,46 @@
+External Modules Used
+
+nltk was used to pre process the text data.
+csv module was used  for procesing the  input test and train files
+
+External Lexicon Used:
+
+Harvard general enquiry dictionary was used for identifying positive and negative words out of the context of the training file.  The dictionary was  downloaded as a text file (general_inquirer_dictionary.txt) from http://www.wjh.harvard.edu/~inquirer/Home.html and a custom parser (general_enquirer.py) was written to extract the negative and positive words. The extracted words were dumped in a pickle file  negative_words.p and positive_words.p
+
+Design:
+
+The Classifier system consists of the following modules
+
+1) Preprocessor 2) Vocabulary count builder  3) Classifier Trainer 4) Feature Selector 5) Classifier
+
+1) Preprocessor:
+
+    The preprocessing module  present in preprocessor.py. It has functions for stemming,removing stop words and other text processing functions like expanding negative      words like can't to cannot  etc and functions for tokenizing the input string as well
+	
+2) Vocabulary Count builder
+
+   The functions for reading the  input train file and  constructing the word counts and  words counts per class  is located in vocabulary_utils.py	. This also stores 
+   the counts of words per class into a pickle  file. 
+   
+3) Classifier Trainer:
+
+    This is used to train the naive bayes classifier.  This module has functions for calculating the prior class probabilities / prior word probabilities and  dumping   
+	them into a pickle file mentioned by the user    
+	
+4) Feature Selector:	
+	
+	This module implements the  Mutual information feature selector. This methods reads from the word count pickle  file dumped by the Vocabulary count  builder
+	For every given word the features relevance to a given class is calcualted and the  top 10000 words are selected as they  are found to produce the highest accuracy      during experiments
+	
+5) Classifier Module:
+
+   This module implements the naive bayes classifier (implemented in two files invoke_classifier invokes the function and naive_bayes_classifier performs the actual 
+   classification). The classifier reads the data from the "prior_probabilities.p"  file given as input and also the training file.  For every word the naive bayes 
+   classifier computes the probability of it if it had been seen in the training data.   The down side of this classifier is it ignores words that  are not seen in the 
+   train data. An improvement on this would be to implement a dictionary that provides  the equavalent meaning of unseen words and looks for the presence of the words  
+   in the training data.  
+
+    	
+	
+
+
